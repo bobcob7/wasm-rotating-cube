@@ -1,2 +1,2 @@
-*.wasm
 wasm-rotating-cube
+.idea
