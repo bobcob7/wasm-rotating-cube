@@ -2,34 +2,36 @@ package gltypes
 
 import "syscall/js"
 
+// GLTypes provides WebGL bindings.
 type GLTypes struct {
-	staticDraw         js.Value
-	arrayBuffer        js.Value
-	elementArrayBuffer js.Value
-	vertexShader       js.Value
-	fragmentShader     js.Value
-	float              js.Value
-	depthTest          js.Value
-	colorBufferBit     js.Value
-	depthBufferBit     js.Value
-	triangles          js.Value
-	unsignedShort      js.Value
-	lEqual             js.Value
-	lineLoop           js.Value
+	StaticDraw         js.Value
+	ArrayBuffer        js.Value
+	ElementArrayBuffer js.Value
+	VertexShader       js.Value
+	FragmentShader     js.Value
+	Float              js.Value
+	DepthTest          js.Value
+	ColorBufferBit     js.Value
+	DepthBufferBit     js.Value
+	Triangles          js.Value
+	UnsignedShort      js.Value
+	LEqual             js.Value
+	LineLoop           js.Value
 }
 
-func (types *GLTypes) New() {
-	types.staticDraw = gl.Get("STATIC_DRAW")
-	types.arrayBuffer = gl.Get("ARRAY_BUFFER")
-	types.elementArrayBuffer = gl.Get("ELEMENT_ARRAY_BUFFER")
-	types.vertexShader = gl.Get("VERTEX_SHADER")
-	types.fragmentShader = gl.Get("FRAGMENT_SHADER")
-	types.float = gl.Get("FLOAT")
-	types.depthTest = gl.Get("DEPTH_TEST")
-	types.colorBufferBit = gl.Get("COLOR_BUFFER_BIT")
-	types.triangles = gl.Get("TRIANGLES")
-	types.unsignedShort = gl.Get("UNSIGNED_SHORT")
-	types.lEqual = gl.Get("LEQUAL")
-	types.depthBufferBit = gl.Get("DEPTH_BUFFER_BIT")
-	types.lineLoop = gl.Get("LINE_LOOP")
+// New grabs the WebGL bindings from a GL context.
+func (types *GLTypes) New(gl js.Value) {
+	types.StaticDraw = gl.Get("STATIC_DRAW")
+	types.ArrayBuffer = gl.Get("ARRAY_BUFFER")
+	types.ElementArrayBuffer = gl.Get("ELEMENT_ARRAY_BUFFER")
+	types.VertexShader = gl.Get("VERTEX_SHADER")
+	types.FragmentShader = gl.Get("FRAGMENT_SHADER")
+	types.Float = gl.Get("FLOAT")
+	types.DepthTest = gl.Get("DEPTH_TEST")
+	types.ColorBufferBit = gl.Get("COLOR_BUFFER_BIT")
+	types.Triangles = gl.Get("TRIANGLES")
+	types.UnsignedShort = gl.Get("UNSIGNED_SHORT")
+	types.LEqual = gl.Get("LEQUAL")
+	types.DepthBufferBit = gl.Get("DEPTH_BUFFER_BIT")
+	types.LineLoop = gl.Get("LINE_LOOP")
 }

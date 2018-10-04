@@ -4,15 +4,15 @@ import (
 	"syscall/js"
 	"unsafe"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/bobcob7/wasm-rotating-cube/gltypes"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 var (
 	width   int
 	height  int
 	gl      js.Value
-	glTypes GLTypes
+	glTypes gltypes.GLTypes
 )
 
 //// BUFFERS + SHADERS ////
@@ -81,7 +81,7 @@ func main() {
 	}
 
 	// Get some WebGL bindings
-	glTypes.New()
+	glTypes.New(gl)
 
 	// Convert buffers to JS TypedArrays
 	var colors = js.TypedArrayOf(colorsNative)
@@ -90,28 +90,28 @@ func main() {
 
 	// Create vertex buffer
 	vertexBuffer := gl.Call("createBuffer")
-	gl.Call("bindBuffer", glTypes.arrayBuffer, vertexBuffer)
-	gl.Call("bufferData", glTypes.arrayBuffer, vertices, glTypes.staticDraw)
+	gl.Call("bindBuffer", glTypes.ArrayBuffer, vertexBuffer)
+	gl.Call("bufferData", glTypes.ArrayBuffer, vertices, glTypes.StaticDraw)
 
 	// Create color buffer
 	colorBuffer := gl.Call("createBuffer")
-	gl.Call("bindBuffer", glTypes.arrayBuffer, colorBuffer)
-	gl.Call("bufferData", glTypes.arrayBuffer, colors, glTypes.staticDraw)
+	gl.Call("bindBuffer", glTypes.ArrayBuffer, colorBuffer)
+	gl.Call("bufferData", glTypes.ArrayBuffer, colors, glTypes.StaticDraw)
 
 	// Create index buffer
 	indexBuffer := gl.Call("createBuffer")
-	gl.Call("bindBuffer", glTypes.elementArrayBuffer, indexBuffer)
-	gl.Call("bufferData", glTypes.elementArrayBuffer, indices, glTypes.staticDraw)
+	gl.Call("bindBuffer", glTypes.ElementArrayBuffer, indexBuffer)
+	gl.Call("bufferData", glTypes.ElementArrayBuffer, indices, glTypes.StaticDraw)
 
 	//// Shaders ////
 
 	// Create a vertex shader object
-	vertShader := gl.Call("createShader", glTypes.vertexShader)
+	vertShader := gl.Call("createShader", glTypes.VertexShader)
 	gl.Call("shaderSource", vertShader, vertShaderCode)
 	gl.Call("compileShader", vertShader)
 
 	// Create fragment shader object
-	fragShader := gl.Call("createShader", glTypes.fragmentShader)
+	fragShader := gl.Call("createShader", glTypes.FragmentShader)
 	gl.Call("shaderSource", fragShader, fragShaderCode)
 	gl.Call("compileShader", fragShader)
 
@@ -127,14 +127,14 @@ func main() {
 	ViewMatrix := gl.Call("getUniformLocation", shaderProgram, "Vmatrix")
 	ModelMatrix := gl.Call("getUniformLocation", shaderProgram, "Mmatrix")
 
-	gl.Call("bindBuffer", glTypes.arrayBuffer, vertexBuffer)
+	gl.Call("bindBuffer", glTypes.ArrayBuffer, vertexBuffer)
 	position := gl.Call("getAttribLocation", shaderProgram, "position")
-	gl.Call("vertexAttribPointer", position, 3, glTypes.float, false, 0, 0)
+	gl.Call("vertexAttribPointer", position, 3, glTypes.Float, false, 0, 0)
 	gl.Call("enableVertexAttribArray", position)
 
-	gl.Call("bindBuffer", glTypes.arrayBuffer, colorBuffer)
+	gl.Call("bindBuffer", glTypes.ArrayBuffer, colorBuffer)
 	color := gl.Call("getAttribLocation", shaderProgram, "color")
-	gl.Call("vertexAttribPointer", color, 3, glTypes.float, false, 0, 0)
+	gl.Call("vertexAttribPointer", color, 3, glTypes.Float, false, 0, 0)
 	gl.Call("enableVertexAttribArray", color)
 
 	gl.Call("useProgram", shaderProgram)
@@ -143,7 +143,7 @@ func main() {
 	gl.Call("clearColor", 0.5, 0.5, 0.5, 0.9) // Color the screen is cleared to
 	gl.Call("clearDepth", 1.0)                // Z value that is set to the Depth buffer every frame
 	gl.Call("viewport", 0, 0, width, height)  // Viewport size
-	gl.Call("depthFunc", glTypes.lEqual)
+	gl.Call("depthFunc", glTypes.LEqual)
 
 	//// Create Matrixes ////
 	ratio := float32(width) / float32(height)
@@ -169,7 +169,7 @@ func main() {
 	var rotation = float32(0)
 
 	// Bind to element array for draw function
-	gl.Call("bindBuffer", glTypes.elementArrayBuffer, indexBuffer)
+	gl.Call("bindBuffer", glTypes.ElementArrayBuffer, indexBuffer)
 
 	renderFrame = js.NewCallback(func(args []js.Value) {
 		// Calculate rotation rate
@@ -192,12 +192,12 @@ func main() {
 		gl.Call("uniformMatrix4fv", ModelMatrix, false, typedModelMatrixBuffer)
 
 		// Clear the screen
-		gl.Call("enable", glTypes.depthTest)
-		gl.Call("clear", glTypes.colorBufferBit)
-		gl.Call("clear", glTypes.depthBufferBit)
+		gl.Call("enable", glTypes.DepthTest)
+		gl.Call("clear", glTypes.ColorBufferBit)
+		gl.Call("clear", glTypes.DepthBufferBit)
 
 		// Draw the cube
-		gl.Call("drawElements", glTypes.triangles, len(indicesNative), glTypes.unsignedShort, 0)
+		gl.Call("drawElements", glTypes.Triangles, len(indicesNative), glTypes.UnsignedShort, 0)
 
 		// Call next frame
 		js.Global().Call("requestAnimationFrame", renderFrame)
