@@ -61,7 +61,6 @@ void main(void) {
 `
 
 func main() {
-
 	// Init Canvas stuff
 	doc := js.Global().Get("document")
 	canvasEl := doc.Call("getElementById", "gocanvas")
@@ -71,11 +70,11 @@ func main() {
 	canvasEl.Set("height", height)
 
 	gl = canvasEl.Call("getContext", "webgl")
-	if gl == js.Undefined() {
+	if gl.IsUndefined() {
 		gl = canvasEl.Call("getContext", "experimental-webgl")
 	}
 	// once again
-	if gl == js.Undefined() {
+	if gl.IsUndefined() {
 		js.Global().Call("alert", "browser might not support webgl")
 		return
 	}
@@ -84,9 +83,9 @@ func main() {
 	glTypes.New(gl)
 
 	// Convert buffers to JS TypedArrays
-	var colors = js.TypedArrayOf(colorsNative)
-	var vertices = js.TypedArrayOf(verticesNative)
-	var indices = js.TypedArrayOf(indicesNative)
+	var colors = gltypes.SliceToTypedArray(colorsNative)
+	var vertices = gltypes.SliceToTypedArray(verticesNative)
+	var indices = gltypes.SliceToTypedArray(indicesNative)
 
 	// Create vertex buffer
 	vertexBuffer := gl.Call("createBuffer")
@@ -152,14 +151,14 @@ func main() {
 	projMatrix := mgl32.Perspective(mgl32.DegToRad(45.0), ratio, 1, 100.0)
 	var projMatrixBuffer *[16]float32
 	projMatrixBuffer = (*[16]float32)(unsafe.Pointer(&projMatrix))
-	typedProjMatrixBuffer := js.TypedArrayOf([]float32((*projMatrixBuffer)[:]))
+	typedProjMatrixBuffer := gltypes.SliceToTypedArray([]float32((*projMatrixBuffer)[:]))
 	gl.Call("uniformMatrix4fv", PositionMatrix, false, typedProjMatrixBuffer)
 
 	// Generate and apply view matrix
 	viewMatrix := mgl32.LookAtV(mgl32.Vec3{3.0, 3.0, 3.0}, mgl32.Vec3{0.0, 0.0, 0.0}, mgl32.Vec3{0.0, 1.0, 0.0})
 	var viewMatrixBuffer *[16]float32
 	viewMatrixBuffer = (*[16]float32)(unsafe.Pointer(&viewMatrix))
-	typedViewMatrixBuffer := js.TypedArrayOf([]float32((*viewMatrixBuffer)[:]))
+	typedViewMatrixBuffer := gltypes.SliceToTypedArray([]float32((*viewMatrixBuffer)[:]))
 	gl.Call("uniformMatrix4fv", ViewMatrix, false, typedViewMatrixBuffer)
 
 	//// Drawing the Cube ////
@@ -186,7 +185,7 @@ func main() {
 		// Convert model matrix to a JS TypedArray
 		var modelMatrixBuffer *[16]float32
 		modelMatrixBuffer = (*[16]float32)(unsafe.Pointer(&movMatrix))
-		typedModelMatrixBuffer := js.TypedArrayOf([]float32((*modelMatrixBuffer)[:]))
+		typedModelMatrixBuffer := gltypes.SliceToTypedArray([]float32((*modelMatrixBuffer)[:]))
 
 		// Apply the model matrix
 		gl.Call("uniformMatrix4fv", ModelMatrix, false, typedModelMatrixBuffer)
@@ -201,8 +200,8 @@ func main() {
 
 		// Call next frame
 		js.Global().Call("requestAnimationFrame", renderFrame)
-		
-		return nil;
+
+		return nil
 	})
 	defer renderFrame.Release()
 
